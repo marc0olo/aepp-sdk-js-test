@@ -1,0 +1,26 @@
+version: '3'
+services:
+  node:
+    image: 'aeternity/aeternity:${NODE_TAG}'
+    hostname: node
+    environment:
+      AETERNITY_CONFIG: /home/aeternity/aeternity.yaml
+    command: |
+      bin/aeternity console -noinput -aehttp enable_debug_endpoints true
+    volumes:
+      - './docker/aeternity.yaml:/home/aeternity/aeternity.yaml'
+      - './docker/keys/node:/home/aeternity/node/keys'
+  compiler:
+    hostname: compiler
+    image: 'aeternity/aesophia_http:${COMPILER_TAG}'
+    ports:
+      - '3080:3080'
+  proxy:
+    image: 'nginx:${NGINX_TAG}'
+    hostname: proxy
+    ports:
+      - '3001:3001'
+    volumes:
+      - './docker/nginx-default.conf:/etc/nginx/conf.d/default.conf'
+      - './docker/nginx-cors.conf:/etc/nginx/cors.conf'
+      - './docker/nginx-ws.conf:/etc/nginx/ws.conf'
