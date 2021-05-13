@@ -2,6 +2,7 @@ const { Universal: Ae, MemoryAccount, Node, Crypto } = require('@aeternity/aepp-
 const fs = require('fs')
 
 const CONTRACT_SOURCE = fs.readFileSync('./contracts/example-contract-compiler-v5.aes', 'utf8')
+const SECOND_SOURCE = fs.readFileSync('./contracts/ExampleContract.aes', 'utf8')
 
 const KEYPAIR = {
     secretKey: 'bb9f0b01c8c9553cfbaf7ef81a50f977b1326801ebf7294d1c2cbccdedf27476e9bbf604e611b5460a3b3999e9771b6f60417d73ce7c5519e12f7e127a1225ca',
@@ -38,16 +39,28 @@ const main = async () => {
         address: KEYPAIR.publicKey
     });
 
-    const contractInstance = await client.getContractInstance(CONTRACT_SOURCE);
-    const deployedContract = await contractInstance.deploy([]);
+    let contractInstance = await client.getContractInstance(CONTRACT_SOURCE);
+    let deployedContract = await contractInstance.deploy([]);
     console.log(`Contract deployed at ${deployedContract.address}`);
-    const contractObject = await client.getContractInstance(CONTRACT_SOURCE, { contractAddress: deployedContract.address })
+    let contractObject = await client.getContractInstance(CONTRACT_SOURCE, { contractAddress: deployedContract.address });
     let callResult = await contractObject.methods.say_hello('Marco');
     console.log(`decoded result of say_hello: ${callResult.decodedResult}`);
     const human = new Map();
     human.set(42, 42);
     callResult = await contractObject.methods.add_human(human);
     console.log(`decoded result of add_human: ${callResult.decodedResult}`);
+
+
+    contractInstance = await client.getContractInstance(SECOND_SOURCE);
+    deployedContract = await contractInstance.deploy([]);
+    contractObject = await client.getContractInstance(SECOND_SOURCE, { contractAddress: deployedContract.address });
+    console.log(`Contract deployed at ${deployedContract.address}`);
+    callResult = await contractObject.methods.nameExists('C.hamster');
+    console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
+    callResult = await contractObject.methods.createHamster('C.hamster');
+    callResult = await contractObject.methods.nameExists('C.hamster');
+    console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
+
     // const bytecode = await client.contractCompile(CONTRACT_SOURCE);
     // console.log(`Obtained bytecode ${bytecode.bytecode}`);
 
