@@ -42,12 +42,12 @@ const main = async () => {
     const deployedContract = await contractInstance.deploy([]);
     console.log(`Contract deployed at ${deployedContract.address}`);
     const contractObject = await client.getContractInstance(CONTRACT_SOURCE, { contractAddress: deployedContract.address })
-    const callResult = await contractObject.methods.say_hello('Marco');
-    console.log(callResult);
-    let human = new Map();
+    let callResult = await contractObject.methods.say_hello('Marco');
+    console.log(`decoded result of say_hello: ${callResult.decodedResult}`);
+    const human = new Map();
     human.set(42, 42);
-    let addHumanResult = await contractObject.methods.add_human(human);
-    console.log(addHumanResult);
+    callResult = await contractObject.methods.add_human(human);
+    console.log(`decoded result of add_human: ${callResult.decodedResult}`);
     // const bytecode = await client.contractCompile(CONTRACT_SOURCE);
     // console.log(`Obtained bytecode ${bytecode.bytecode}`);
 
