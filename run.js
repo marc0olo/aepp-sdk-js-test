@@ -40,39 +40,23 @@ const main = async () => {
     });
 
     let contractInstance = await client.getContractInstance(CONTRACT_SOURCE);
-    let deployedContract = await contractInstance.deploy([]);
-    console.log(`Contract deployed at ${deployedContract.address}`);
-    let contractObject = await client.getContractInstance(CONTRACT_SOURCE, { contractAddress: deployedContract.address });
-    let callResult = await contractObject.methods.say_hello('Marco');
+    let deploymentResult = await contractInstance.deploy([]);
+    console.log(`Contract deployed at ${deploymentResult.address}`);
+    let callResult = await contractInstance.methods.say_hello('Marco');
     console.log(`decoded result of say_hello: ${callResult.decodedResult}`);
     const human = new Map();
     human.set(42, 42);
-    callResult = await contractObject.methods.add_human(human);
+    callResult = await contractInstance.methods.add_human(human);
     console.log(`decoded result of add_human: ${callResult.decodedResult}`);
 
-
     contractInstance = await client.getContractInstance(SECOND_SOURCE);
-    deployedContract = await contractInstance.deploy([]);
-    contractObject = await client.getContractInstance(SECOND_SOURCE, { contractAddress: deployedContract.address });
-    console.log(`Contract deployed at ${deployedContract.address}`);
-    callResult = await contractObject.methods.nameExists('C.hamster');
+    deploymentResult = await contractInstance.deploy([]);
+    console.log(`Contract deployed at ${deploymentResult.address}`);
+    callResult = await contractInstance.methods.nameExists('C.hamster');
     console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
-    callResult = await contractObject.methods.createHamster('C.hamster');
-    callResult = await contractObject.methods.nameExists('C.hamster');
+    callResult = await contractInstance.methods.createHamster('C.hamster');
+    callResult = await contractInstance.methods.nameExists('C.hamster');
     console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
-
-    // const bytecode = await client.contractCompile(CONTRACT_SOURCE);
-    // console.log(`Obtained bytecode ${bytecode.bytecode}`);
-
-    // const deployed = await bytecode.deploy();
-    // console.log(`Contract deployed at ${deployed.address}`);
-    // console.log(deployed);
-
-    // const call = await deployed.callStatic('return_string')
-    // console.log(`Contract call transaction hash ${call.hash}`)
-  
-
-    // console.log(`Execution result: ${await call.decode()}`)
 }
 
 main()
