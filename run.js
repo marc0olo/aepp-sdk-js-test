@@ -39,24 +39,35 @@ const main = async () => {
         address: KEYPAIR.publicKey
     });
 
-    let contractInstance = await client.getContractInstance(CONTRACT_SOURCE);
+    let contractInstance = await client.getContractInstance({source: CONTRACT_SOURCE});
     let deploymentResult = await contractInstance.deploy([]);
     console.log(`Contract deployed at ${deploymentResult.address}`);
-    let callResult = await contractInstance.methods.say_hello('Marco');
-    console.log(`decoded result of say_hello: ${callResult.decodedResult}`);
+    try {
+        let callResult = await contractInstance.methods.say_hello('Marco');
+        console.log(`decoded result of say_hello: ${callResult.decodedResult}`);
+    } catch(e) {
+        // why this error ?!?!
+        console.log(e.responseError);
+    }
     const human = new Map();
     human.set(42, 42);
-    callResult = await contractInstance.methods.add_human(human);
+    let callResult = await contractInstance.methods.add_human(human);
     console.log(`decoded result of add_human: ${callResult.decodedResult}`);
+    console.log(callResult.decodedResult);
 
-    contractInstance = await client.getContractInstance(SECOND_SOURCE);
+    contractInstance = await client.getContractInstance({source: SECOND_SOURCE});
     deploymentResult = await contractInstance.deploy([]);
     console.log(`Contract deployed at ${deploymentResult.address}`);
-    callResult = await contractInstance.methods.nameExists('C.hamster');
-    console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
-    callResult = await contractInstance.methods.createHamster('C.hamster');
-    callResult = await contractInstance.methods.nameExists('C.hamster');
-    console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
+    try {
+        callResult = await contractInstance.methods.nameExists('C.hamster');
+        console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
+        callResult = await contractInstance.methods.createHamster('C.hamster');
+        callResult = await contractInstance.methods.nameExists('C.hamster');
+        console.log(`decoded result of nameExists: ${callResult.decodedResult}`);
+    } catch(e) {
+        // why this error ?!?!
+        console.log(e.responseError);
+    }
 }
 
 main()
